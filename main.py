@@ -11,11 +11,15 @@ sheet = wb['2) Input sheet']
 tax = sheet['G3'].value
 
 # TODO retrieve the identifier from the excel sheet.
-identifier = '9944'
+identifier = '9922'
 
 url = f'{BASE_URL}/{identifier}/{tax}'
 
 r = requests.get(url)
+if 'not registered in SML.' in r.text:
+    print('error')
+    exit()
+
 soup = BeautifulSoup(r.text, 'html.parser')
 
 # 'dd' finds all the output values required for VAT.
