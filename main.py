@@ -1,5 +1,7 @@
 import requests
 from openpyxl import load_workbook
+from bs4 import BeautifulSoup
+
 
 BASE_URL = r'https://vefa.difi.no/smp'
 
@@ -9,7 +11,12 @@ tax = sheet['G3'].value
 identifier = '9944'
 
 url = f'{BASE_URL}/{identifier}/{tax}'
-print(url)
 
 r = requests.get(url)
-print(r.status_code)
+soup = BeautifulSoup(r.text, 'html.parser')
+output = soup.findAll('dd')
+documents = soup.findAll('small', {'class': 'meta'})
+results_list = [str(i).replace('<dd>', '').replace('</dd>', '')
+                for i in output]
+
+print(results_list)
