@@ -1,6 +1,7 @@
 import requests
 from openpyxl import load_workbook
 from bs4 import BeautifulSoup
+import csv
 
 
 BASE_URL = r"https://vefa.difi.no/smp"
@@ -45,7 +46,7 @@ wb = load_workbook("sap_sheet.xlsx", data_only=True)
 sheet = wb["2) Input sheet"]
 results_data = {}
 
-for i in range(3, 4): #2264
+for i in range(3, 2264): #2264
     search_value = sheet["G" + str(i)].value
     input_scheme = sheet["F" + str(i)].value
     if 'VAT' in input_scheme:
@@ -71,9 +72,11 @@ for i in range(3, 4): #2264
             soup_2 = BeautifulSoup(str(documents), "html.parser")
             data = soup_2.findAll("span")
             results_data[search_value] = data
-
-with open('results.txt', 'w+') as f:
-    f.write(str(results_data))
-
+try:
+    with open('results.csv', 'w') as f:
+        for key in results_data.keys():
+            f.write("%s,%s\n"%(key, results_data[key]))
+except IOError:
+    print('I/O ERROR')
 print('Done')
 # TODO retrieve ONLY the values from the html.
