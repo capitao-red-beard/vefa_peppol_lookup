@@ -43,28 +43,39 @@ dict_values = {'DE:VAT': '9930',
 # Load the sheet and load in values rather than formulas.
 wb = load_workbook("sap_sheet.xlsx", data_only=True)
 sheet = wb["2) Input sheet"]
+results_data = {}
 
-for i in range(3, 2264):
+for i in range(3, 4): #2264
     search_value = sheet["G" + str(i)].value
     input_scheme = sheet["F" + str(i)].value
-    code = dict_values.get(input_scheme)
+    if 'VAT' in input_scheme:
 
-    url = f"{BASE_URL}/{code}/{search_value}"
+        code = dict_values.get(input_scheme)
 
-    r = requests.get(url)
-    if "not registered in SML." in r.text:
-        print("error")
-        exit()
+        url = f"{BASE_URL}/{code}/{search_value}"
 
-    soup = BeautifulSoup(r.text, "html.parser")
+        r = requests.get(url)
+        if "not registered in SML." in r.text:
+            results_data[search_value] = 'Not registered in SML'
+        else:
+            soup = BeautifulSoup(r.text, "html.parser")
 
-    # 'dd' finds all the output values required for VAT.
-    output = soup.findAll("dd")
-    results_list = [str(i).replace("<dd>", "").replace("</dd>", "")
-                    for i in output]
-    print(results_list)
+            # 'dd' finds all the output values required for VAT.
+            output = soup.findAll("dd")
+            results_list = [str(i).replace("<dd>", "").replace("</dd>", "")
+                            for i in output]
+            results_data[search_value] = results_list
 
-    # Find all of the document formats returned in the page.
-    documents = soup.findAll("small", {"class": "meta"})
 
+            # Find all of the document formats returned in the page.
+            documents = soup.findAll("small", {"class": "meta"})
+
+            soup_2 = BeautifulSoup(str(documents), "html.parser")
+            data = soup_2.findAll("span")
+            print(data)
+
+with open('results.txt', 'w+') as f:
+    f.write(str(results_data))
+
+print('Done')
 # TODO retrieve ONLY the values from the html.
