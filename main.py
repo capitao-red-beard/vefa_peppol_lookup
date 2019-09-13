@@ -64,15 +64,13 @@ for i in range(3, 4): #2264
             output = soup.findAll("dd")
             results_list = [str(i).replace("<dd>", "").replace("</dd>", "")
                             for i in output]
-            results_data[search_value] = results_list
-
 
             # Find all of the document formats returned in the page.
             documents = soup.findAll("small", {"class": "meta"})
 
             soup_2 = BeautifulSoup(str(documents), "html.parser")
             data = soup_2.findAll("span")
-            print(data)
+            results_data[search_value] = data
 
 with open('results.txt', 'w+') as f:
     f.write(str(results_data))
