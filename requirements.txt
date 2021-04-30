@@ -7,4 +7,4 @@ jdcal==1.4.1
 openpyxl==2.6.3
 pycodestyle==2.5.0
 requests==2.22.0
-urllib3==1.25.3
+urllib3==1.25.8
